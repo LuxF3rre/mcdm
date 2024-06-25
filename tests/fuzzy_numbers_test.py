@@ -2,7 +2,7 @@ from decimal import Decimal
 
 import pytest
 
-from fuzzy_numbers import TriangularFuzzyNumber
+from mcdm_app.fuzzy_numbers import TriangularFuzzyNumber
 
 
 def test_absolute_zero_scale() -> None:

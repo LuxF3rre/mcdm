@@ -3,8 +3,8 @@ from decimal import Decimal
 import pandas as pd
 import streamlit as st
 
-from fuzzy_numbers import TriangularFuzzyNumber
-from mcdm.fuzzy_topsis import calculate_fuzzy_topsis
+from mcdm_app.fuzzy_numbers import TriangularFuzzyNumber
+from mcdm_app.mcdm.fuzzy_topsis import calculate_fuzzy_topsis
 
 st.set_page_config(page_title="Fuzzy TOPSIS", page_icon="🧶")
 

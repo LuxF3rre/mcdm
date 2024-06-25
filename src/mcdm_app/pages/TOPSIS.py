@@ -3,7 +3,7 @@ from decimal import Decimal
 import pandas as pd
 import streamlit as st
 
-from mcdm.topsis import calculate_topsis
+from mcdm_app.mcdm.topsis import calculate_topsis
 
 st.set_page_config(page_title="TOPSIS", page_icon="🎯")
 

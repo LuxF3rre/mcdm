@@ -2,7 +2,7 @@ from decimal import Decimal
 
 import pandas as pd
 
-from mcdm.topsis import calculate_topsis
+from mcdm_app.mcdm.topsis import calculate_topsis
 
 data_topsis_in = {
     "Criterion": [
