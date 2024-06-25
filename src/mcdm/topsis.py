@@ -5,14 +5,14 @@ import pandas as pd
 
 def calculate_normalized_weighted_scores(scores: pd.DataFrame) -> pd.DataFrame:
     normalization_factor = scores
-    normalization_factor["SqueredScore"] = normalization_factor["Score"] ** Decimal("2")
+    normalization_factor["SqueredScore"] = normalization_factor["Score"] ** Decimal("2")  # type: ignore
     normalization_factor = (
         normalization_factor.groupby("Criterion")["SqueredScore"]
         .sum()
         .reset_index()
         .rename(columns={"SqueredScore": "SumOfSqueredScore"})
     )
-    normalization_factor["NormalizationFactor"] = normalization_factor["SumOfSqueredScore"] ** Decimal("0.5")
+    normalization_factor["NormalizationFactor"] = normalization_factor["SumOfSqueredScore"] ** Decimal("0.5")  # type: ignore
 
     normalized_weighted = scores.merge(normalization_factor, on="Criterion", how="left")
     normalized_weighted["NormalizedScore"] = normalized_weighted["Score"] / normalized_weighted["NormalizationFactor"]
@@ -68,16 +68,16 @@ def calculate_ideal_best_and_worst(normalized_weighted_scores: pd.DataFrame) -> 
 def calculate_euclidian_distance(ideal_best_and_worst: pd.DataFrame) -> pd.DataFrame:
     ideal_best_and_worst["EuclidianDistanceBest"] = (
         ideal_best_and_worst["NormalizedWeightedScore"] - ideal_best_and_worst["IdealBest"]
-    ) ** Decimal("2")
+    ) ** Decimal("2")  # type: ignore
     ideal_best_and_worst["EuclidianDistanceWorst"] = (
         ideal_best_and_worst["NormalizedWeightedScore"] - ideal_best_and_worst["IdealWorst"]
-    ) ** Decimal("2")
+    ) ** Decimal("2")  # type: ignore
 
     euclidian_distance = (
         ideal_best_and_worst.groupby("Option")[["EuclidianDistanceBest", "EuclidianDistanceWorst"]].sum().reset_index()
     )
-    euclidian_distance["EuclidianDistanceBest"] = euclidian_distance["EuclidianDistanceBest"] ** Decimal("0.5")
-    euclidian_distance["EuclidianDistanceWorst"] = euclidian_distance["EuclidianDistanceWorst"] ** Decimal("0.5")
+    euclidian_distance["EuclidianDistanceBest"] = euclidian_distance["EuclidianDistanceBest"] ** Decimal("0.5")  # type: ignore
+    euclidian_distance["EuclidianDistanceWorst"] = euclidian_distance["EuclidianDistanceWorst"] ** Decimal("0.5")  # type: ignore
 
     return euclidian_distance
 
@@ -93,6 +93,6 @@ def calculate_performance_score(euclidian_distance: pd.DataFrame) -> pd.DataFram
 
 
 def calculate_topsis(scores: pd.DataFrame) -> pd.DataFrame:
-    return calculate_performance_score(  # pyright: ignore
+    return calculate_performance_score(
         calculate_euclidian_distance(calculate_ideal_best_and_worst(calculate_normalized_weighted_scores(scores)))
     )[["Option", "Performance Score", "Rank"]]
