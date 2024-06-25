@@ -2,10 +2,10 @@ from decimal import Decimal
 
 import pytest
 
-from mcdm_app.mcdm.fuzzy_topsis import TriangularFuzzyNumber
+from fuzzy_numbers import TriangularFuzzyNumber
 
 
-def test_absolute_zero_scale():
+def test_absolute_zero_scale() -> None:
     with pytest.raises(ValueError):
         TriangularFuzzyNumber(Decimal("-1"), Decimal("2"), Decimal("3"))
     with pytest.raises(ValueError):
@@ -14,14 +14,14 @@ def test_absolute_zero_scale():
         TriangularFuzzyNumber(Decimal("1"), Decimal("2"), Decimal("-3"))
 
 
-def test_elements_assumptions_scale():
+def test_elements_assumptions_scale() -> None:
     with pytest.raises(ValueError):
         TriangularFuzzyNumber(Decimal("2"), Decimal("4"), Decimal("3"))
     with pytest.raises(ValueError):
         TriangularFuzzyNumber(Decimal("5"), Decimal("3"), Decimal("4"))
 
 
-def test_combine():
+def test_combine() -> None:
     assert TriangularFuzzyNumber.combine(
         [
             TriangularFuzzyNumber(Decimal("1"), Decimal("2"), Decimal("3")),
@@ -50,43 +50,43 @@ def test_combine():
     ) == TriangularFuzzyNumber(Decimal("0"), Decimal("2"), Decimal("3"))
 
 
-def test_scalar_multiply():
+def test_scalar_multiply() -> None:
     assert TriangularFuzzyNumber(Decimal("1"), Decimal("2"), Decimal("3")) * Decimal("2") == TriangularFuzzyNumber(
         Decimal("2"), Decimal("4"), Decimal("6")
     )
 
 
-def test_fuzzy_multiply():
+def test_fuzzy_multiply() -> None:
     assert TriangularFuzzyNumber(Decimal("1"), Decimal("2"), Decimal("3")) * TriangularFuzzyNumber(
         Decimal("2"), Decimal("3"), Decimal("4")
     ) == TriangularFuzzyNumber(Decimal("2"), Decimal("6"), Decimal("12"))
 
 
-def test_scalar_divide():
+def test_scalar_divide() -> None:
     assert TriangularFuzzyNumber(Decimal("2"), Decimal("4"), Decimal("6")) / Decimal("2") == TriangularFuzzyNumber(
         Decimal("1"), Decimal("2"), Decimal("3")
     )
 
 
-def test_fuzzy_divide():
+def test_fuzzy_divide() -> None:
     assert TriangularFuzzyNumber(Decimal("2"), Decimal("6"), Decimal("12")) / TriangularFuzzyNumber(
         Decimal("2"), Decimal("3"), Decimal("4")
-    ) == TriangularFuzzyNumber(Decimal("1"), Decimal("2"), Decimal("3"))
+    ) == TriangularFuzzyNumber(Decimal("0.5"), Decimal("2"), Decimal("6"))
 
 
-def test_power_positive():
+def test_power_positive() -> None:
     assert TriangularFuzzyNumber(Decimal("1"), Decimal("2"), Decimal("3")) ** Decimal("2") == TriangularFuzzyNumber(
         Decimal("1"), Decimal("4"), Decimal("9")
     )
 
 
-def test_power_negative():
+def test_power_negative() -> None:
     assert TriangularFuzzyNumber(Decimal("1"), Decimal("2"), Decimal("3")) ** Decimal("-2") == TriangularFuzzyNumber(
         Decimal("1") / Decimal("9"), Decimal("1") / Decimal(Decimal("4")), Decimal("1") / Decimal("1")
     )
 
 
-def test_less_than():
+def test_less_than() -> None:
     assert TriangularFuzzyNumber(Decimal("1"), Decimal("4"), Decimal("5")) < TriangularFuzzyNumber(
         Decimal("2"), Decimal("2"), Decimal("2")
     )
@@ -95,7 +95,7 @@ def test_less_than():
     )
 
 
-def test_greater_than():
+def test_greater_than() -> None:
     assert TriangularFuzzyNumber(Decimal("1"), Decimal("1"), Decimal("10")) > TriangularFuzzyNumber(
         Decimal("5"), Decimal("6"), Decimal("7")
     )
@@ -104,7 +104,7 @@ def test_greater_than():
     )
 
 
-def test_min():
+def test_min() -> None:
     assert min(
         TriangularFuzzyNumber(Decimal("1"), Decimal("1"), Decimal("10")),
         TriangularFuzzyNumber(Decimal("5"), Decimal("6"), Decimal("7")),
@@ -115,7 +115,7 @@ def test_min():
     ) == TriangularFuzzyNumber(Decimal("1"), Decimal("1"), Decimal("10"))
 
 
-def test_max():
+def test_max() -> None:
     assert max(
         TriangularFuzzyNumber(Decimal("1"), Decimal("1"), Decimal("10")),
         TriangularFuzzyNumber(Decimal("5"), Decimal("6"), Decimal("7")),
@@ -126,7 +126,7 @@ def test_max():
     ) == TriangularFuzzyNumber(Decimal("1"), Decimal("1"), Decimal("10"))
 
 
-def test_euclidean_distance():
+def test_euclidean_distance() -> None:
     assert TriangularFuzzyNumber.euclidean_distance(
         TriangularFuzzyNumber(
             Decimal("2"),

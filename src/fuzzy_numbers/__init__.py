@@ -1,0 +1,1 @@
+from fuzzy_numbers.triangular import TriangularFuzzyNumber as TriangularFuzzyNumber

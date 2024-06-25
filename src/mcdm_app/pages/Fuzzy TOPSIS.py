@@ -3,7 +3,8 @@ from decimal import Decimal
 import pandas as pd
 import streamlit as st
 
-from mcdm.fuzzy_topsis import TriangularFuzzyNumber, calculate_fuzzy_topsis
+from fuzzy_numbers import TriangularFuzzyNumber
+from mcdm.fuzzy_topsis import calculate_fuzzy_topsis
 
 st.set_page_config(page_title="Fuzzy TOPSIS", page_icon="🧶")
 
@@ -97,13 +98,13 @@ if st.button("Calculate options preference"):
     decision_matrix = pd.DataFrame(columns=["Option", "Criterion", "Weight", "Score"])
     for decision_maker_number in range(number_of_decision_makers):
         scores_dict[decision_maker_number]["a"] = scores_dict[decision_maker_number]["a"].apply(
-            lambda x: Decimal(str(x))
+            lambda x: Decimal(str(x))  # type: ignore
         )
         scores_dict[decision_maker_number]["b"] = scores_dict[decision_maker_number]["b"].apply(
-            lambda x: Decimal(str(x))
+            lambda x: Decimal(str(x))  # type: ignore
         )
         scores_dict[decision_maker_number]["c"] = scores_dict[decision_maker_number]["c"].apply(
-            lambda x: Decimal(str(x))
+            lambda x: Decimal(str(x))  # type: ignore
         )
 
         scores_dict[decision_maker_number]["Score"] = scores_dict[decision_maker_number].apply(
@@ -117,13 +118,13 @@ if st.button("Calculate options preference"):
         scores_dict[decision_maker_number] = scores_dict[decision_maker_number].drop(columns=["a", "b", "c"])
 
         weights_dict[decision_maker_number]["a"] = weights_dict[decision_maker_number]["a"].apply(
-            lambda x: Decimal(str(x))
+            lambda x: Decimal(str(x))  # type: ignore
         )
         weights_dict[decision_maker_number]["b"] = weights_dict[decision_maker_number]["b"].apply(
-            lambda x: Decimal(str(x))
+            lambda x: Decimal(str(x))  # type: ignore
         )
         weights_dict[decision_maker_number]["c"] = weights_dict[decision_maker_number]["c"].apply(
-            lambda x: Decimal(str(x))
+            lambda x: Decimal(str(x))  # type: ignore
         )
 
         weights_dict[decision_maker_number]["Weight"] = weights_dict[decision_maker_number].apply(

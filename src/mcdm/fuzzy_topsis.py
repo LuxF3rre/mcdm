@@ -1,106 +1,7 @@
-from dataclasses import dataclass
-from decimal import Decimal
-from typing import Optional
-
 import numpy as np
 import pandas as pd
 
-
-@dataclass(frozen=True)
-class TriangularFuzzyNumber:
-    a: Decimal
-    b: Decimal
-    c: Decimal
-
-    def __post_init__(self):
-        if self.a < 0 or self.b < 0 or self.c < 0:
-            raise ValueError
-        if not (self.a <= self.b <= self.c):
-            raise ValueError
-
-    def __mul__(self, other: "TriangularFuzzyNumber | Decimal") -> "TriangularFuzzyNumber":
-        if isinstance(other, TriangularFuzzyNumber):
-            return TriangularFuzzyNumber(
-                self.a * other.a,
-                self.b * other.b,
-                self.c * other.c,
-            )
-        return TriangularFuzzyNumber(
-            self.a * other,
-            self.b * other,
-            self.c * other,
-        )
-
-    def __truediv__(self, other: "TriangularFuzzyNumber | Decimal") -> "TriangularFuzzyNumber":
-        if isinstance(other, TriangularFuzzyNumber):
-            return TriangularFuzzyNumber(
-                self.a / other.a,
-                self.b / other.b,
-                self.c / other.c,
-            )
-        return TriangularFuzzyNumber(
-            self.a / other,
-            self.b / other,
-            self.c / other,
-        )
-
-    def __pow__(self, other: Decimal) -> "TriangularFuzzyNumber":
-        if other < 0:
-            return TriangularFuzzyNumber(
-                Decimal("1") / (self.c ** abs(other)),
-                Decimal("1") / (self.b ** abs(other)),
-                Decimal("1") / (self.a ** abs(other)),
-            )
-        return TriangularFuzzyNumber(
-            self.a**other,
-            self.b**other,
-            self.c**other,
-        )
-
-    def __lt__(self, other: "TriangularFuzzyNumber") -> bool:
-        return self.a < other.a
-
-    def __le__(self, other: "TriangularFuzzyNumber") -> bool:
-        return self.a < other.a or self == other
-
-    def __gt__(self, other: "TriangularFuzzyNumber") -> bool:
-        return self.c > other.c
-
-    def __ge__(self, other: "TriangularFuzzyNumber") -> bool:
-        return self.c > other.c or self == other
-
-    @staticmethod
-    def combine(fuzzy_numbers: list["TriangularFuzzyNumber"], how: Optional[str] = None) -> "TriangularFuzzyNumber":
-        if how == "max":
-            return TriangularFuzzyNumber(
-                max(number.a for number in fuzzy_numbers),
-                max(number.b for number in fuzzy_numbers),
-                max(number.c for number in fuzzy_numbers),
-            )
-
-        if how == "min":
-            return TriangularFuzzyNumber(
-                min(number.a for number in fuzzy_numbers),
-                min(number.b for number in fuzzy_numbers),
-                min(number.c for number in fuzzy_numbers),
-            )
-
-        return TriangularFuzzyNumber(
-            min(number.a for number in fuzzy_numbers),
-            sum(number.b for number in fuzzy_numbers) / Decimal(len(fuzzy_numbers)),
-            max(number.c for number in fuzzy_numbers),
-        )
-
-    @staticmethod
-    def euclidean_distance(left: "TriangularFuzzyNumber", right: "TriangularFuzzyNumber") -> Decimal:
-        return (
-            (
-                (left.a - right.a) ** Decimal("2")
-                + (left.b - right.b) ** Decimal("2")
-                + (left.c - right.c) ** Decimal("2")
-            )
-            / Decimal("3")
-        ) ** Decimal("0.5")
+from fuzzy_numbers import TriangularFuzzyNumber
 
 
 def combine_decision_makers(decision_matrixes: pd.DataFrame) -> pd.DataFrame:
@@ -123,14 +24,14 @@ def calculate_normalized_fuzzy_decision_matrix(combined_decision_matrix: pd.Data
     c_max = (
         benefit_criteria.groupby("Criterion")["Score"]
         .agg(lambda series: np.max(series.apply(lambda score: score.c)))
-        .reset_index(name="NormalizationFactor")  # pyright: ignore
+        .reset_index(name="NormalizationFactor")
     )
 
     cost_criteria = combined_decision_matrix[combined_decision_matrix["Is Negative"]]
     a_min = (
         cost_criteria.groupby("Criterion")["Score"]
         .agg(lambda series: np.min(series.apply(lambda score: score.a)))
-        .reset_index(name="NormalizationFactor")  # pyright: ignore
+        .reset_index(name="NormalizationFactor")
     )
 
     normalization_factor = pd.concat([c_max, a_min])
@@ -158,12 +59,12 @@ def calculate_ideal_solutions(weighted_normalized_fuzzy_decision_matrix: pd.Data
     ideal_best = (
         weighted_normalized_fuzzy_decision_matrix.groupby("Criterion")["WeightedNormalizedScore"]
         .agg(lambda x: TriangularFuzzyNumber.combine(x, how="max"))
-        .reset_index(name="IdealBest")  # pyright: ignore
+        .reset_index(name="IdealBest")
     )
     ideal_worst = (
         weighted_normalized_fuzzy_decision_matrix.groupby("Criterion")["WeightedNormalizedScore"]
         .agg(lambda x: TriangularFuzzyNumber.combine(x, how="min"))
-        .reset_index(name="IdealWorst")  # pyright: ignore
+        .reset_index(name="IdealWorst")
     )
 
     with_ideal_best_worst = weighted_normalized_fuzzy_decision_matrix.merge(
@@ -213,4 +114,4 @@ def calculate_fuzzy_topsis(decision_matrixes: pd.DataFrame) -> pd.DataFrame:
                 )
             )
         )
-    )[["Option", "ClosenessCoefficient", "Rank"]].rename(columns={"ClosenessCoefficient": "Performance Score"})  # pyright: ignore
+    )[["Option", "ClosenessCoefficient", "Rank"]].rename(columns={"ClosenessCoefficient": "Performance Score"})

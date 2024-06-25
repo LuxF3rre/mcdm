@@ -53,11 +53,11 @@ if st.button("Calculate options preference"):
         var_name="Option",
         value_name="Score",
     )
-    if data_for_topsis["Weight"].isna().any() or data_for_topsis["Score"].isna().any():  # pyright: ignore
+    if data_for_topsis["Weight"].isna().any() or data_for_topsis["Score"].isna().any():
         st.error("Please, fill out all Weights and Scores.")
     else:
-        data_for_topsis["Score"] = data_for_topsis["Score"].apply(lambda x: Decimal(str(x)))
-        data_for_topsis["Weight"] = data_for_topsis["Weight"].apply(lambda x: Decimal(str(x)))
+        data_for_topsis["Score"] = data_for_topsis["Score"].apply(lambda x: Decimal(str(x)))  # type: ignore
+        data_for_topsis["Weight"] = data_for_topsis["Weight"].apply(lambda x: Decimal(str(x)))  # type: ignore
         data_for_topsis["Is Negative"] = data_for_topsis["Is Negative"].fillna(False)
 
         topsis = calculate_topsis(data_for_topsis)

@@ -2,7 +2,7 @@ from decimal import Decimal
 
 import pandas as pd
 
-from mcdm_app.mcdm.topsis import calculate_topsis
+from mcdm.topsis import calculate_topsis
 
 data_topsis_in = {
     "Criterion": [
@@ -143,12 +143,12 @@ data_topsis_out = {
 }
 
 topsis_in = pd.DataFrame(data_topsis_in)
-topsis_in["Score"] = topsis_in["Score"].apply(lambda x: Decimal(str(x)))
-topsis_in["Weight"] = topsis_in["Weight"].apply(lambda x: Decimal(str(x)))
+topsis_in["Score"] = topsis_in["Score"].apply(lambda x: Decimal(str(x)))  # type: ignore
+topsis_in["Weight"] = topsis_in["Weight"].apply(lambda x: Decimal(str(x)))  # type: ignore
 
 topsis_out = pd.DataFrame(data_topsis_out)
-topsis_out["Performance Score"] = topsis_out["Performance Score"].apply(lambda x: Decimal(x))
+topsis_out["Performance Score"] = topsis_out["Performance Score"].apply(lambda x: Decimal(x))  # type: ignore
 
 
-def test_calculate_topsis():
+def test_calculate_topsis() -> None:
     assert calculate_topsis(topsis_in).equals(topsis_out)
