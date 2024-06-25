@@ -51,7 +51,7 @@ pip install -r requirements.txt
 Launch the Streamlit app using:
 
 ```console
-streamlit run ./src/mcdm_app/Home.py
+streamlit run ./src/Home.py
 ```
 
 ### 5. Access the Webapp:
