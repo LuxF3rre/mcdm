@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-from mcdm_app.fuzzy_numbers import TriangularFuzzyNumber
+from fuzzy_numbers import TriangularFuzzyNumber
 
 
 def combine_decision_makers(decision_matrixes: pd.DataFrame) -> pd.DataFrame:
