@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from decimal import Decimal
-from typing import Optional
 
 
 @dataclass(frozen=True)
@@ -15,7 +14,9 @@ class TriangularFuzzyNumber:
         if not (self.a <= self.b <= self.c):
             raise ValueError
 
-    def __mul__(self, other: "TriangularFuzzyNumber | Decimal") -> "TriangularFuzzyNumber":
+    def __mul__(
+        self, other: "TriangularFuzzyNumber | Decimal"
+    ) -> "TriangularFuzzyNumber":
         if isinstance(other, TriangularFuzzyNumber):
             return TriangularFuzzyNumber(
                 self.a * other.a,
@@ -28,7 +29,9 @@ class TriangularFuzzyNumber:
             self.c * other,
         )
 
-    def __truediv__(self, other: "TriangularFuzzyNumber | Decimal") -> "TriangularFuzzyNumber":
+    def __truediv__(
+        self, other: "TriangularFuzzyNumber | Decimal"
+    ) -> "TriangularFuzzyNumber":
         if isinstance(other, TriangularFuzzyNumber):
             return TriangularFuzzyNumber(
                 self.a / other.c,
@@ -77,7 +80,7 @@ class TriangularFuzzyNumber:
     @staticmethod
     def combine(
         fuzzy_numbers: list["TriangularFuzzyNumber"],
-        how: Optional[str] = None,
+        how: str | None = None,
     ) -> "TriangularFuzzyNumber":
         if how == "max":
             return TriangularFuzzyNumber(

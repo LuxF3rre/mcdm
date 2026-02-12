@@ -51,57 +51,65 @@ def test_combine() -> None:
 
 
 def test_scalar_multiply() -> None:
-    assert TriangularFuzzyNumber(Decimal("1"), Decimal("2"), Decimal("3")) * Decimal("2") == TriangularFuzzyNumber(
-        Decimal("2"), Decimal("4"), Decimal("6")
-    )
+    assert TriangularFuzzyNumber(Decimal("1"), Decimal("2"), Decimal("3")) * Decimal(
+        "2"
+    ) == TriangularFuzzyNumber(Decimal("2"), Decimal("4"), Decimal("6"))
 
 
 def test_fuzzy_multiply() -> None:
-    assert TriangularFuzzyNumber(Decimal("1"), Decimal("2"), Decimal("3")) * TriangularFuzzyNumber(
+    assert TriangularFuzzyNumber(
+        Decimal("1"), Decimal("2"), Decimal("3")
+    ) * TriangularFuzzyNumber(
         Decimal("2"), Decimal("3"), Decimal("4")
     ) == TriangularFuzzyNumber(Decimal("2"), Decimal("6"), Decimal("12"))
 
 
 def test_scalar_divide() -> None:
-    assert TriangularFuzzyNumber(Decimal("2"), Decimal("4"), Decimal("6")) / Decimal("2") == TriangularFuzzyNumber(
-        Decimal("1"), Decimal("2"), Decimal("3")
-    )
+    assert TriangularFuzzyNumber(Decimal("2"), Decimal("4"), Decimal("6")) / Decimal(
+        "2"
+    ) == TriangularFuzzyNumber(Decimal("1"), Decimal("2"), Decimal("3"))
 
 
 def test_fuzzy_divide() -> None:
-    assert TriangularFuzzyNumber(Decimal("2"), Decimal("6"), Decimal("12")) / TriangularFuzzyNumber(
+    assert TriangularFuzzyNumber(
+        Decimal("2"), Decimal("6"), Decimal("12")
+    ) / TriangularFuzzyNumber(
         Decimal("2"), Decimal("3"), Decimal("4")
     ) == TriangularFuzzyNumber(Decimal("0.5"), Decimal("2"), Decimal("6"))
 
 
 def test_power_positive() -> None:
-    assert TriangularFuzzyNumber(Decimal("1"), Decimal("2"), Decimal("3")) ** Decimal("2") == TriangularFuzzyNumber(
-        Decimal("1"), Decimal("4"), Decimal("9")
-    )
+    assert TriangularFuzzyNumber(Decimal("1"), Decimal("2"), Decimal("3")) ** Decimal(
+        "2"
+    ) == TriangularFuzzyNumber(Decimal("1"), Decimal("4"), Decimal("9"))
 
 
 def test_power_negative() -> None:
-    assert TriangularFuzzyNumber(Decimal("1"), Decimal("2"), Decimal("3")) ** Decimal("-2") == TriangularFuzzyNumber(
-        Decimal("1") / Decimal("9"), Decimal("1") / Decimal(Decimal("4")), Decimal("1") / Decimal("1")
+    assert TriangularFuzzyNumber(Decimal("1"), Decimal("2"), Decimal("3")) ** Decimal(
+        "-2"
+    ) == TriangularFuzzyNumber(
+        Decimal("1") / Decimal("9"),
+        Decimal("1") / Decimal(Decimal("4")),
+        Decimal("1") / Decimal("1"),
     )
 
 
 def test_less_than() -> None:
-    assert TriangularFuzzyNumber(Decimal("1"), Decimal("4"), Decimal("5")) < TriangularFuzzyNumber(
-        Decimal("2"), Decimal("2"), Decimal("2")
-    )
-    assert not TriangularFuzzyNumber(Decimal("1"), Decimal("4"), Decimal("5")) < TriangularFuzzyNumber(
-        Decimal("0"), Decimal("2"), Decimal("2")
-    )
+    assert TriangularFuzzyNumber(
+        Decimal("1"), Decimal("4"), Decimal("5")
+    ) < TriangularFuzzyNumber(Decimal("2"), Decimal("2"), Decimal("2"))
+    assert not TriangularFuzzyNumber(
+        Decimal("1"), Decimal("4"), Decimal("5")
+    ) < TriangularFuzzyNumber(Decimal("0"), Decimal("2"), Decimal("2"))
 
 
 def test_greater_than() -> None:
-    assert TriangularFuzzyNumber(Decimal("1"), Decimal("1"), Decimal("10")) > TriangularFuzzyNumber(
-        Decimal("5"), Decimal("6"), Decimal("7")
-    )
-    assert not TriangularFuzzyNumber(Decimal("1"), Decimal("1"), Decimal("10")) > TriangularFuzzyNumber(
-        Decimal("5"), Decimal("6"), Decimal("15")
-    )
+    assert TriangularFuzzyNumber(
+        Decimal("1"), Decimal("1"), Decimal("10")
+    ) > TriangularFuzzyNumber(Decimal("5"), Decimal("6"), Decimal("7"))
+    assert not TriangularFuzzyNumber(
+        Decimal("1"), Decimal("1"), Decimal("10")
+    ) > TriangularFuzzyNumber(Decimal("5"), Decimal("6"), Decimal("15"))
 
 
 def test_min() -> None:
