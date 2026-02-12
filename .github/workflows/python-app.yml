@@ -1,6 +1,3 @@
-# This workflow will install Python dependencies, run tests and lint with a single version of Python
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
-
 name: Build
 
 on:
@@ -17,21 +14,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
-      - name: Set up Python 3.12
-        uses: actions/setup-python@v3
+      - uses: actions/checkout@v4
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v6
         with:
           python-version: "3.12"
       - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements-dev.txt
+        run: uv sync --frozen --dev
       - name: Lint with ruff
-        run: |
-          ruff check ./src/
+        run: uv run ruff check src/
+      - name: Check formatting with ruff
+        run: uv run ruff format --check src/ tests/
+      - name: Type check with ty
+        run: uv run ty check src tests
       - name: Test with pytest
-        run: |
-          pytest
-      - name: Test with mypy
-        run: |
-          mypy ./src/
+        run: uv run pytest

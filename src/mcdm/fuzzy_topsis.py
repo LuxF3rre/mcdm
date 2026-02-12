@@ -19,8 +19,12 @@ def combine_decision_makers(decision_matrixes: pd.DataFrame) -> pd.DataFrame:
     return decision_combined
 
 
-def calculate_normalized_fuzzy_decision_matrix(combined_decision_matrix: pd.DataFrame) -> pd.DataFrame:
-    benefit_criteria = combined_decision_matrix[~combined_decision_matrix["Is Negative"]]
+def calculate_normalized_fuzzy_decision_matrix(
+    combined_decision_matrix: pd.DataFrame,
+) -> pd.DataFrame:
+    benefit_criteria = combined_decision_matrix[
+        ~combined_decision_matrix["Is Negative"]
+    ]
     c_max = (
         benefit_criteria.groupby("Criterion")["Score"]
         .agg(lambda series: np.max(series.apply(lambda score: score.c)))
@@ -36,7 +40,9 @@ def calculate_normalized_fuzzy_decision_matrix(combined_decision_matrix: pd.Data
 
     normalization_factor = pd.concat([c_max, a_min])
 
-    matrix_with_factor = combined_decision_matrix.merge(normalization_factor, on="Criterion", how="left")
+    matrix_with_factor = combined_decision_matrix.merge(
+        normalization_factor, on="Criterion", how="left"
+    )
 
     matrix_with_factor["NormalizedScore"] = np.where(
         matrix_with_factor["Is Negative"],
@@ -47,22 +53,31 @@ def calculate_normalized_fuzzy_decision_matrix(combined_decision_matrix: pd.Data
     return matrix_with_factor
 
 
-def calculate_weighted_normalized_fuzzy_decision_matrix(normalized_fuzzy_decision_matrix: pd.DataFrame) -> pd.DataFrame:
+def calculate_weighted_normalized_fuzzy_decision_matrix(
+    normalized_fuzzy_decision_matrix: pd.DataFrame,
+) -> pd.DataFrame:
     normalized_fuzzy_decision_matrix["WeightedNormalizedScore"] = (
-        normalized_fuzzy_decision_matrix["NormalizedScore"] * normalized_fuzzy_decision_matrix["Weight"]
+        normalized_fuzzy_decision_matrix["NormalizedScore"]
+        * normalized_fuzzy_decision_matrix["Weight"]
     )
 
     return normalized_fuzzy_decision_matrix
 
 
-def calculate_ideal_solutions(weighted_normalized_fuzzy_decision_matrix: pd.DataFrame) -> pd.DataFrame:
+def calculate_ideal_solutions(
+    weighted_normalized_fuzzy_decision_matrix: pd.DataFrame,
+) -> pd.DataFrame:
     ideal_best = (
-        weighted_normalized_fuzzy_decision_matrix.groupby("Criterion")["WeightedNormalizedScore"]
+        weighted_normalized_fuzzy_decision_matrix.groupby("Criterion")[
+            "WeightedNormalizedScore"
+        ]
         .agg(lambda x: TriangularFuzzyNumber.combine(x, how="max"))
         .reset_index(name="IdealBest")
     )
     ideal_worst = (
-        weighted_normalized_fuzzy_decision_matrix.groupby("Criterion")["WeightedNormalizedScore"]
+        weighted_normalized_fuzzy_decision_matrix.groupby("Criterion")[
+            "WeightedNormalizedScore"
+        ]
         .agg(lambda x: TriangularFuzzyNumber.combine(x, how="min"))
         .reset_index(name="IdealWorst")
     )
@@ -73,19 +88,27 @@ def calculate_ideal_solutions(weighted_normalized_fuzzy_decision_matrix: pd.Data
     return with_ideal_best_worst
 
 
-def calculate_distance_from_solutions(with_ideal_solutions: pd.DataFrame) -> pd.DataFrame:
+def calculate_distance_from_solutions(
+    with_ideal_solutions: pd.DataFrame,
+) -> pd.DataFrame:
     with_ideal_solutions["DistanceBest"] = with_ideal_solutions.apply(
-        lambda row: TriangularFuzzyNumber.euclidean_distance(row["WeightedNormalizedScore"], row["IdealBest"]),
+        lambda row: TriangularFuzzyNumber.euclidean_distance(
+            row["WeightedNormalizedScore"], row["IdealBest"]
+        ),
         axis=1,
     )
     with_ideal_solutions["DistanceWorst"] = with_ideal_solutions.apply(
-        lambda row: TriangularFuzzyNumber.euclidean_distance(row["WeightedNormalizedScore"], row["IdealWorst"]),
+        lambda row: TriangularFuzzyNumber.euclidean_distance(
+            row["WeightedNormalizedScore"], row["IdealWorst"]
+        ),
         axis=1,
     )
     return with_ideal_solutions
 
 
-def calculate_closeness_coefficient(distance_from_solutions: pd.DataFrame) -> pd.DataFrame:
+def calculate_closeness_coefficient(
+    distance_from_solutions: pd.DataFrame,
+) -> pd.DataFrame:
     distance_per_option = (
         distance_from_solutions.groupby("Option")
         .agg(
@@ -97,11 +120,13 @@ def calculate_closeness_coefficient(distance_from_solutions: pd.DataFrame) -> pd
         .reset_index()
     )
 
-    distance_per_option["ClosenessCoefficient"] = distance_per_option["DistanceWorst"] / (
-        distance_per_option["DistanceWorst"] + distance_per_option["DistanceBest"]
-    )
+    distance_per_option["ClosenessCoefficient"] = distance_per_option[
+        "DistanceWorst"
+    ] / (distance_per_option["DistanceWorst"] + distance_per_option["DistanceBest"])
 
-    distance_per_option["Rank"] = distance_per_option["ClosenessCoefficient"].rank(ascending=False)
+    distance_per_option["Rank"] = distance_per_option["ClosenessCoefficient"].rank(
+        ascending=False
+    )
     return distance_per_option
 
 
@@ -110,8 +135,12 @@ def calculate_fuzzy_topsis(decision_matrixes: pd.DataFrame) -> pd.DataFrame:
         calculate_distance_from_solutions(
             calculate_ideal_solutions(
                 calculate_weighted_normalized_fuzzy_decision_matrix(
-                    calculate_normalized_fuzzy_decision_matrix(combine_decision_makers(decision_matrixes))
+                    calculate_normalized_fuzzy_decision_matrix(
+                        combine_decision_makers(decision_matrixes)
+                    )
                 )
             )
         )
-    )[["Option", "ClosenessCoefficient", "Rank"]].rename(columns={"ClosenessCoefficient": "Performance Score"})
+    )[["Option", "ClosenessCoefficient", "Rank"]].rename(
+        columns={"ClosenessCoefficient": "Performance Score"}
+    )

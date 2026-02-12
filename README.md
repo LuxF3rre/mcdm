@@ -1,21 +1,18 @@
 # Multi-Criteria Decision Making
 
 [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://luxf3rre-mcdm.streamlit.app/)
-[![building - Poetry](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/python-poetry/website/main/static/badge/v0.json)](https://python-poetry.org/)
-[![linting - Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
-[![code style - Black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-[![imports - isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336)](https://pycqa.github.io/isort/)
-[![mypy - checked](https://img.shields.io/badge/mypy-checked-blue.svg)](https://mypy-lang.org/)
+[![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
+[![ty](https://img.shields.io/badge/type%20checker-ty-blue.svg)](https://github.com/astral-sh/ty)
 [![Build](https://github.com/LuxF3rre/mcdm/actions/workflows/python-app.yml/badge.svg)](https://github.com/LuxF3rre/mcdm/actions/workflows/python-app.yml)
 
 ## Overview
 
-In today's complex world, inundated with countless choices, making informed decisions is more critical than ever. This project introduces a multi-criteria decision analysis tool powered by Python and Streamlit, harnessing the potential of the (fuzzy) TOPSIS method.
+We make decisions every day — some simple, some not. When multiple factors matter at once, it helps to have a structured way to think through your options. This tool uses the TOPSIS method to help you do exactly that, powered by Python and Streamlit.
 
-**TOPSIS**, or the *Technique for Order of Preference by Similarity to Ideal Solution*, stands out as a prime method for multi-criteria decision analysis. It is designed to pinpoint the optimal solution among a range of alternatives, keeping multiple criteria or attributes in mind. The core philosophy of TOPSIS lies in spotting solutions that inch closest to the ideal solution while distancing themselves from the anti-ideal or negative-ideal solution.
+**TOPSIS** (*Technique for Order of Preference by Similarity to Ideal Solution*) ranks your options by how close each one is to the best possible outcome and how far it is from the worst. You give it scores and weights — it does the math.
 
-
-**Fuzzy TOPSIS** is an extension of the traditional TOPSIS method, incorporating fuzzy logic to handle uncertainty and imprecision in the decision-making process. This approach is particularly useful in situations where decision criteria are not clearly defined or are subject to human judgment and perception, which is often the case in complex decision-making scenarios.
+**Fuzzy TOPSIS** adds fuzzy logic on top, so you can work with ranges instead of exact numbers. This is handy when scores are subjective or when several people are weighing in with different perspectives.
 
 ## Features
 
@@ -25,37 +22,33 @@ In today's complex world, inundated with countless choices, making informed deci
 
 ## Installation & Usage
 
-### 1. **Clone the Repository:**
+### 1. Install uv
 
-To get started, first clone the repository to your local machine:
+Follow the [uv installation guide](https://docs.astral.sh/uv/getting-started/installation/) or use the one-liner:
+
+```console
+# macOS / Linux
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Windows
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+```
+
+### 2. Clone and set up
 
 ```console
 git clone https://github.com/LuxF3rre/mcdm
-```
-
-### 2. Navigate to the Project Directory:
-Change your directory to the cloned repository:
-
-```console
 cd mcdm
+uv sync
 ```
 
-### 3. Install Dependencies:
-Install all necessary dependencies using the following command:
+### 3. Run the app
 
 ```console
-pip install -r requirements.txt
+uv run streamlit run ./src/Home.py
 ```
 
-### 4. Run the App:
-Launch the Streamlit app using:
-
-```console
-streamlit run ./src/Home.py
-```
-
-### 5. Access the Webapp:
-Upon successful execution, Streamlit will provide a local URL (http://localhost:8501/). Simply open this URL in your preferred browser and follow the on-screen instructions to use the app.
+Open http://localhost:8501/ in your browser and you're good to go.
 
 ## References
 
