@@ -2,7 +2,7 @@ exclude = '^\.claude/'
 
 [[repos]]
 repo = "https://github.com/astral-sh/ruff-pre-commit"
-rev = "v0.15.0"
+rev = "v0.15.2"
 hooks = [
   { id = "ruff-check", args = ["--fix"] },
   { id = "ruff-format" },
@@ -10,7 +10,7 @@ hooks = [
 
 [[repos]]
 repo = "https://github.com/pre-commit/pre-commit-hooks"
-rev = "v5.0.0"
+rev = "v6.0.0"
 hooks = [
   { id = "trailing-whitespace" },
   { id = "name-tests-test" },
@@ -70,14 +70,14 @@ hooks = [
 
 [[repos]]
 repo = "https://github.com/igorshubovych/markdownlint-cli"
-rev = "v0.44.0"
+rev = "v0.47.0"
 hooks = [
   { id = "markdownlint" },
 ]
 
 [[repos]]
 repo = "https://github.com/gitleaks/gitleaks"
-rev = "v8.24.3"
+rev = "v8.30.0"
 hooks = [
   { id = "gitleaks" },
 ]
