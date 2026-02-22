@@ -34,17 +34,17 @@ st.divider()
 
 _EXAMPLE_OPTIONS = ["Laptop A", "Laptop B", "Laptop C"]
 
-col_load, col_clear, _ = st.columns([2, 2, 6])
+col_load, col_clear, _ = st.columns([3, 3, 6], gap="small")
 
 with col_load:
-    if st.button("Load example"):
+    if st.button("Load example", use_container_width=True):
         for key in ("topsis_options", "topsis_criteria"):
             st.session_state.pop(key, None)
         st.session_state["topsis_example"] = True
         st.rerun()
 
 with col_clear:
-    if st.button("Clear data"):
+    if st.button("Clear data", use_container_width=True):
         for key in ("topsis_options", "topsis_criteria", "topsis_example"):
             st.session_state.pop(key, None)
         st.rerun()
