@@ -51,16 +51,30 @@ _EXAMPLE_OPTIONS = ["Laptop A", "Laptop B", "Laptop C"]
 _EXAMPLE_CRITERIA = ["Price", "Quality", "Design"]
 _EXAMPLE_IS_NEGATIVE = [True, False, False]
 
-if st.button("Load example"):
-    for key in list(st.session_state.keys()):
-        if isinstance(key, str) and (
-            key in ("fuzzy_options", "fuzzy_criteria")
-            or key.startswith(("Weight", "Score"))
-        ):
-            del st.session_state[key]
-    st.session_state["fuzzy_example"] = True
-    st.session_state["dm_slider"] = 2
-    st.rerun()
+col_load, col_clear, _ = st.columns([1, 1, 4])
+
+with col_load:
+    if st.button("Load example"):
+        for key in list(st.session_state.keys()):
+            if isinstance(key, str) and (
+                key in ("fuzzy_options", "fuzzy_criteria")
+                or key.startswith(("Weight", "Score"))
+            ):
+                del st.session_state[key]
+        st.session_state["fuzzy_example"] = True
+        st.session_state["dm_slider"] = 2
+        st.rerun()
+
+with col_clear:
+    if st.button("Clear data"):
+        for key in list(st.session_state.keys()):
+            if isinstance(key, str) and (
+                key in ("fuzzy_options", "fuzzy_criteria", "fuzzy_example")
+                or key.startswith(("Weight", "Score"))
+            ):
+                del st.session_state[key]
+        st.session_state.pop("dm_slider", None)
+        st.rerun()
 
 _use_example = st.session_state.get("fuzzy_example", False)
 
