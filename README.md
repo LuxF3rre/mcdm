@@ -50,14 +50,14 @@ uv sync
 uv run streamlit run ./src/Home.py
 ```
 
-Open http://localhost:8501/ in your browser and you're good to go.
+Open <http://localhost:8501/> in your browser and you're good to go.
 
 ## References
 
 For a deeper dive into the methodology and applications of TOPSIS:
 
-- Hwang, C.L.; Lai, Y.J.; Liu, T.Y. (1993). "A new approach for multiple objective decision making". _Computers and Operational Research_. **20** (8): 889-899. [doi](https://en.wikipedia.org/wiki/Doi_(identifier) "Doi (identifier)"):[10.1016/0305-0548(93)90109-v](https://doi.org/10.1016%2F0305-0548%2893%2990109-v)
-- El Alaoui, M. (2021). "Fuzzy TOPSIS: Logic, Approaches, and Case Studies". _New York: CRC Press_. [doi](https://en.wikipedia.org/wiki/Digital_object_identifier):[10.1201/9781003168416](https://doi.org/10.1201%2F9781003168416). ISBN 978-0-367-76748-8. S2CID 233525185.
+- Hwang, C.L.; Lai, Y.J.; Liu, T.Y. (1993). "A new approach for multiple objective decision making". *Computers and Operational Research*. **20** (8): 889-899. [doi](https://en.wikipedia.org/wiki/Doi_(identifier) "Doi (identifier)"):[10.1016/0305-0548(93)90109-v](https://doi.org/10.1016%2F0305-0548%2893%2990109-v)
+- El Alaoui, M. (2021). "Fuzzy TOPSIS: Logic, Approaches, and Case Studies". *New York: CRC Press*. [doi](https://en.wikipedia.org/wiki/Digital_object_identifier):[10.1201/9781003168416](https://doi.org/10.1201%2F9781003168416). ISBN 978-0-367-76748-8. S2CID 233525185.
 
 ## Contributing
 
