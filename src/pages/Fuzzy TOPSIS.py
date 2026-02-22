@@ -51,10 +51,10 @@ _EXAMPLE_OPTIONS = ["Laptop A", "Laptop B", "Laptop C"]
 _EXAMPLE_CRITERIA = ["Price", "Quality", "Design"]
 _EXAMPLE_IS_NEGATIVE = [True, False, False]
 
-col_load, col_clear, _ = st.columns([2, 2, 6])
+col_load, col_clear, _ = st.columns([3, 3, 6], gap="small")
 
 with col_load:
-    if st.button("Load example"):
+    if st.button("Load example", use_container_width=True):
         for key in list(st.session_state.keys()):
             if isinstance(key, str) and (
                 key in ("fuzzy_options", "fuzzy_criteria")
@@ -66,7 +66,7 @@ with col_load:
         st.rerun()
 
 with col_clear:
-    if st.button("Clear data"):
+    if st.button("Clear data", use_container_width=True):
         for key in list(st.session_state.keys()):
             if isinstance(key, str) and (
                 key in ("fuzzy_options", "fuzzy_criteria", "fuzzy_example")
