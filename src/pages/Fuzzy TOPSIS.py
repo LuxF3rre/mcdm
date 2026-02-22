@@ -51,7 +51,7 @@ _EXAMPLE_OPTIONS = ["Laptop A", "Laptop B", "Laptop C"]
 _EXAMPLE_CRITERIA = ["Price", "Quality", "Design"]
 _EXAMPLE_IS_NEGATIVE = [True, False, False]
 
-col_load, col_clear, _ = st.columns([1, 1, 4])
+col_load, col_clear, _ = st.columns([2, 2, 6])
 
 with col_load:
     if st.button("Load example"):
