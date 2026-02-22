@@ -21,6 +21,8 @@ colorama==0.4.6 ; sys_platform == 'win32'
     # via
     #   click
     #   pytest
+coverage==7.13.4
+    # via pytest-cov
 gitdb==4.0.12
     # via gitpython
 gitpython==3.1.46
@@ -61,7 +63,9 @@ pandas-stubs==3.0.0.260204
 pillow==12.1.1
     # via streamlit
 pluggy==1.6.0
-    # via pytest
+    # via
+    #   pytest
+    #   pytest-cov
 prek==0.3.2
 protobuf==6.33.5
     # via streamlit
@@ -72,6 +76,8 @@ pydeck==0.9.1
 pygments==2.19.2
     # via pytest
 pytest==9.0.2
+    # via pytest-cov
+pytest-cov==7.0.0
 python-dateutil==2.9.0.post0
     # via pandas
 pytz==2025.2
