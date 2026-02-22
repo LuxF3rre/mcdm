@@ -320,7 +320,7 @@ if st.button("Calculate options preference", type="primary"):
             decision_matrix = pd.concat([decision_matrix, merged])
 
         decision_matrix["Is Negative"] = (
-            decision_matrix["Is Negative"].fillna(False).infer_objects(copy=False)
+            decision_matrix["Is Negative"].infer_objects(copy=False).fillna(False)
         )
 
         fuzzy_topsis = calculate_fuzzy_topsis(decision_matrix)
