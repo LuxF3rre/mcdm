@@ -42,7 +42,9 @@ jsonschema-specifications==2025.9.1
 markupsafe==3.0.3
     # via jinja2
 narwhals==2.16.0
-    # via altair
+    # via
+    #   altair
+    #   plotly
 numpy==2.4.2
     # via
     #   mcdm
@@ -53,6 +55,7 @@ numpy==2.4.2
 packaging==26.0
     # via
     #   altair
+    #   plotly
     #   pytest
     #   streamlit
 pandas==2.3.3
@@ -62,6 +65,8 @@ pandas==2.3.3
 pandas-stubs==3.0.0.260204
 pillow==12.1.1
     # via streamlit
+plotly==6.5.2
+    # via mcdm
 pluggy==1.6.0
     # via
     #   pytest

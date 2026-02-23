@@ -1,10 +1,16 @@
 from decimal import Decimal
 
 import pandas as pd
+import plotly.graph_objects as go
 import streamlit as st
 
 from fuzzy_numbers import TriangularFuzzyNumber
-from mcdm.fuzzy_topsis import calculate_fuzzy_topsis
+from mcdm.fuzzy_topsis import (
+    calculate_fuzzy_topsis,
+    calculate_normalized_fuzzy_decision_matrix,
+    calculate_weighted_normalized_fuzzy_decision_matrix,
+    combine_decision_makers,
+)
 
 st.set_page_config(page_title="Fuzzy TOPSIS", page_icon="🧶", layout="wide")
 
@@ -54,7 +60,7 @@ _EXAMPLE_IS_NEGATIVE = [True, False, False]
 col_load, col_clear, _ = st.columns([3, 3, 6], gap="small")
 
 with col_load:
-    if st.button("Load example", use_container_width=True):
+    if st.button("Load example", width="stretch"):
         for key in list(st.session_state.keys()):
             if isinstance(key, str) and (
                 key in ("fuzzy_options", "fuzzy_criteria")
@@ -66,7 +72,7 @@ with col_load:
         st.rerun()
 
 with col_clear:
-    if st.button("Clear data", use_container_width=True):
+    if st.button("Clear data", width="stretch"):
         for key in list(st.session_state.keys()):
             if isinstance(key, str) and (
                 key in ("fuzzy_options", "fuzzy_criteria", "fuzzy_example")
@@ -323,6 +329,12 @@ if st.button("Calculate options preference", type="primary"):
             decision_matrix["Is Negative"].infer_objects(copy=False).fillna(False)
         )
 
+        weighted_normalized = calculate_weighted_normalized_fuzzy_decision_matrix(
+            calculate_normalized_fuzzy_decision_matrix(
+                combine_decision_makers(decision_matrix.copy())
+            )
+        )
+
         fuzzy_topsis = calculate_fuzzy_topsis(decision_matrix)
         fuzzy_topsis = fuzzy_topsis.sort_values("Rank").reset_index(drop=True)
 
@@ -331,6 +343,50 @@ if st.button("Calculate options preference", type="primary"):
             icon="🏆",
         )
         st.dataframe(fuzzy_topsis, hide_index=True, width="stretch")
+
+        radar_data = weighted_normalized[
+            ["Option", "Criterion", "WeightedNormalizedScore"]
+        ].copy()
+        radar_data["WeightedNormalizedScore"] = radar_data[
+            "WeightedNormalizedScore"
+        ].apply(lambda tfn: float(tfn.b))
+
+        criteria_list = radar_data["Criterion"].unique().tolist()
+
+        fig = go.Figure()
+        for option in fuzzy_topsis["Option"]:
+            option_data = radar_data[radar_data["Option"] == option]
+            values = [
+                option_data[option_data["Criterion"] == c][
+                    "WeightedNormalizedScore"
+                ].iloc[0]
+                for c in criteria_list
+            ]
+            values.append(values[0])
+            fig.add_trace(
+                go.Scatterpolar(
+                    r=values,
+                    theta=[*criteria_list, criteria_list[0]],
+                    name=str(option),
+                    fill="toself",
+                    opacity=0.6,
+                )
+            )
+
+        fig.update_layout(
+            title="Options Comparison by Criteria",
+            polar={
+                "bgcolor": "rgba(0,0,0,0)",
+                "radialaxis": {"visible": True},
+            },
+            paper_bgcolor="rgba(0,0,0,0)",
+            plot_bgcolor="rgba(0,0,0,0)",
+            font_color="#cad3f5",
+            legend_title_text="Option",
+            margin={"t": 60, "b": 30, "l": 60, "r": 60},
+        )
+
+        st.plotly_chart(fig, width="stretch")
 
 st.divider()
 
