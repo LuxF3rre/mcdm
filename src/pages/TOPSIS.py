@@ -1,9 +1,10 @@
 from decimal import Decimal
 
 import pandas as pd
+import plotly.graph_objects as go
 import streamlit as st
 
-from mcdm.topsis import calculate_topsis
+from mcdm.topsis import calculate_normalized_weighted_scores, calculate_topsis
 
 st.set_page_config(page_title="TOPSIS", page_icon="🎯", layout="wide")
 
@@ -37,14 +38,14 @@ _EXAMPLE_OPTIONS = ["Laptop A", "Laptop B", "Laptop C"]
 col_load, col_clear, _ = st.columns([3, 3, 6], gap="small")
 
 with col_load:
-    if st.button("Load example", use_container_width=True):
+    if st.button("Load example", width="stretch"):
         for key in ("topsis_options", "topsis_criteria"):
             st.session_state.pop(key, None)
         st.session_state["topsis_example"] = True
         st.rerun()
 
 with col_clear:
-    if st.button("Clear data", use_container_width=True):
+    if st.button("Clear data", width="stretch"):
         for key in ("topsis_options", "topsis_criteria", "topsis_example"):
             st.session_state.pop(key, None)
         st.rerun()
@@ -145,6 +146,10 @@ if st.button("Calculate options preference", type="primary"):
                 data_for_topsis["Is Negative"].fillna(False).infer_objects(copy=False)
             )
 
+            normalized_weighted = calculate_normalized_weighted_scores(
+                data_for_topsis.copy()
+            )
+
             topsis = calculate_topsis(data_for_topsis)
             topsis = topsis.sort_values("Rank").reset_index(drop=True)
 
@@ -153,6 +158,50 @@ if st.button("Calculate options preference", type="primary"):
                 icon="🏆",
             )
             st.dataframe(topsis, hide_index=True, width="stretch")
+
+            radar_data = normalized_weighted[
+                ["Option", "Criterion", "NormalizedWeightedScore"]
+            ].copy()
+            radar_data["NormalizedWeightedScore"] = radar_data[
+                "NormalizedWeightedScore"
+            ].apply(float)
+
+            criteria_list = radar_data["Criterion"].unique().tolist()
+
+            fig = go.Figure()
+            for option in topsis["Option"]:
+                option_data = radar_data[radar_data["Option"] == option]
+                values = [
+                    option_data[option_data["Criterion"] == c][
+                        "NormalizedWeightedScore"
+                    ].iloc[0]
+                    for c in criteria_list
+                ]
+                values.append(values[0])
+                fig.add_trace(
+                    go.Scatterpolar(
+                        r=values,
+                        theta=[*criteria_list, criteria_list[0]],
+                        name=str(option),
+                        fill="toself",
+                        opacity=0.6,
+                    )
+                )
+
+            fig.update_layout(
+                title="Options Comparison by Criteria",
+                polar={
+                    "bgcolor": "rgba(0,0,0,0)",
+                    "radialaxis": {"visible": True},
+                },
+                paper_bgcolor="rgba(0,0,0,0)",
+                plot_bgcolor="rgba(0,0,0,0)",
+                font_color="#cad3f5",
+                legend_title_text="Option",
+                margin={"t": 60, "b": 30, "l": 60, "r": 60},
+            )
+
+            st.plotly_chart(fig, width="stretch")
 
 st.divider()
 
