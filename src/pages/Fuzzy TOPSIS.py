@@ -23,22 +23,131 @@ st.markdown(
     "weighing in with different perspectives."
 )
 
-with st.expander("About Triangular Fuzzy Numbers"):
+with st.expander("How It Works"):
+    st.markdown(
+        "Fuzzy TOPSIS extends the classical TOPSIS method by replacing "
+        "crisp numbers with **Triangular Fuzzy Numbers (TFNs)**, allowing "
+        "decision makers to express uncertainty and subjectivity in their "
+        "evaluations.\n\n"
+        "The algorithm follows six steps:\n\n"
+        "1. **Aggregate** inputs from multiple decision makers into a single "
+        "fuzzy decision matrix\n"
+        "2. **Normalize** the fuzzy matrix — benefit criteria are divided "
+        "by the column max; cost criteria are inverted\n"
+        "3. **Apply fuzzy weights** to get the weighted normalized matrix\n"
+        "4. **Determine fuzzy ideal solutions** — the best and worst "
+        "fuzzy values for each criterion\n"
+        "5. **Compute distances** from each alternative to both fuzzy ideals "
+        "using a Euclidean metric for TFNs\n"
+        "6. **Rank** alternatives by their closeness coefficient"
+    )
+
+with st.expander("Triangular Fuzzy Numbers"):
     st.markdown(
         'Instead of saying "this scores exactly 7", '
         "a **Triangular Fuzzy Number** lets you say "
         '"somewhere between 5 and 9, most likely 7". '
-        "It captures the uncertainty in a simple way."
+        "It captures the uncertainty in a simple way.\n\n"
+        "A TFN $\\tilde{A} = (a, b, c)$ where $a \\leq b \\leq c$ "
+        "has a triangular membership function:"
+    )
+    st.latex(
+        r"\mu_{\tilde{A}}(x) = \begin{cases}"
+        r"\dfrac{x - a}{b - a} & a \leq x \leq b \\[6pt]"
+        r"\dfrac{c - x}{c - b} & b \leq x \leq c \\[6pt]"
+        r"0 & \text{otherwise}"
+        r"\end{cases}"
+    )
+    st.markdown(
+        "The membership value $\\mu = 1$ at $x = b$ (the peak) "
+        "and tapers linearly to $0$ at the endpoints $a$ and $c$."
     )
 
+    st.markdown("**Arithmetic operations on TFNs:**")
     st.markdown(
-        "A Triangular Fuzzy Number consists of three "
-        "values **(Min, Likely, Max)** "
-        "where Min ≤ Likely ≤ Max:\n"
-        "\n"
-        "- **Min** — the minimum possible value\n"
-        "- **Likely** — the most probable value\n"
-        "- **Max** — the maximum possible value\n"
+        "Given $\\tilde{A} = (a_1, b_1, c_1)$ and $\\tilde{B} = (a_2, b_2, c_2)$:"
+    )
+    st.latex(r"\tilde{A} \times \tilde{B} \approx (a_1 a_2,\; b_1 b_2,\; c_1 c_2)")
+    st.latex(
+        r"\tilde{A} \div \tilde{B} \approx "
+        r"\left(\frac{a_1}{c_2},\; \frac{b_1}{b_2},\; \frac{c_1}{a_2}\right)"
+    )
+    st.markdown(
+        "Division inverts the order of the divisor's components to "
+        "preserve the fuzzy interval correctly."
+    )
+
+with st.expander("The Math"):
+    st.markdown("**Step 1 — Aggregating decision makers**")
+    st.markdown(
+        "Given $K$ decision makers, their fuzzy scores $\\tilde{x}_{ij}^k = "
+        "(a_{ij}^k, b_{ij}^k, c_{ij}^k)$ "
+        "are combined into a single TFN:"
+    )
+    st.latex(
+        r"\tilde{x}_{ij} = \left("
+        r"\min_k\, a_{ij}^k,\;"
+        r"\frac{1}{K}\sum_{k=1}^{K} b_{ij}^k,\;"
+        r"\max_k\, c_{ij}^k"
+        r"\right)"
+    )
+
+    st.markdown("**Step 2 — Fuzzy normalization**")
+    st.markdown("For **benefit** criteria (higher is better):")
+    st.latex(
+        r"\tilde{r}_{ij} = \left("
+        r"\frac{a_{ij}}{c_j^*},\;"
+        r"\frac{b_{ij}}{c_j^*},\;"
+        r"\frac{c_{ij}}{c_j^*}"
+        r"\right), \quad c_j^* = \max_i\, c_{ij}"
+    )
+    st.markdown("For **cost** criteria (lower is better):")
+    st.latex(
+        r"\tilde{r}_{ij} = \left("
+        r"\frac{a_j^{-}}{c_{ij}},\;"
+        r"\frac{a_j^{-}}{b_{ij}},\;"
+        r"\frac{a_j^{-}}{a_{ij}}"
+        r"\right), \quad a_j^{-} = \min_i\, a_{ij}"
+    )
+
+    st.markdown("**Step 3 — Weighted normalized fuzzy matrix**")
+    st.latex(r"\tilde{v}_{ij} = \tilde{w}_j \times \tilde{r}_{ij}")
+    st.markdown(
+        "where $\\tilde{w}_j$ is the aggregated fuzzy weight for criterion $j$."
+    )
+
+    st.markdown("**Step 4 — Fuzzy ideal solutions**")
+    st.latex(
+        r"A^{+} = \left\{\tilde{v}_1^{+}, \ldots, \tilde{v}_n^{+}\right\}, \quad "
+        r"\tilde{v}_j^{+} = \left("
+        r"\max_i\, a_{ij},\; \max_i\, b_{ij},\; \max_i\, c_{ij}\right)"
+    )
+    st.latex(
+        r"A^{-} = \left\{\tilde{v}_1^{-}, \ldots, \tilde{v}_n^{-}\right\}, \quad "
+        r"\tilde{v}_j^{-} = \left("
+        r"\min_i\, a_{ij},\; \min_i\, b_{ij},\; \min_i\, c_{ij}\right)"
+    )
+
+    st.markdown("**Step 5 — Distance from fuzzy ideal solutions**")
+    st.markdown(
+        "The Euclidean distance between two TFNs "
+        "$\\tilde{A} = (a_1, b_1, c_1)$ and $\\tilde{B} = (a_2, b_2, c_2)$ is:"
+    )
+    st.latex(
+        r"d(\tilde{A}, \tilde{B}) = "
+        r"\sqrt{\frac{1}{3}\left["
+        r"(a_1 - a_2)^2 + (b_1 - b_2)^2 + (c_1 - c_2)^2"
+        r"\right]}"
+    )
+    st.markdown("Total distances for alternative $i$:")
+    st.latex(r"D_i^{+} = \sum_{j=1}^{n} d(\tilde{v}_{ij},\, \tilde{v}_j^{+})")
+    st.latex(r"D_i^{-} = \sum_{j=1}^{n} d(\tilde{v}_{ij},\, \tilde{v}_j^{-})")
+
+    st.markdown("**Step 6 — Closeness coefficient**")
+    st.latex(r"CC_i = \frac{D_i^{-}}{D_i^{+} + D_i^{-}}, \quad CC_i \in [0, 1]")
+    st.markdown(
+        "$CC_i = 1$ means the alternative perfectly matches the fuzzy ideal best. "
+        "Alternatives are ranked in descending order of $CC_i$."
     )
 
 with st.expander("References"):
