@@ -17,6 +17,69 @@ st.markdown(
     "— it does the math."
 )
 
+with st.expander("How It Works"):
+    st.markdown(
+        "TOPSIS compares each alternative to a theoretical "
+        "**ideal best** (all criteria at their best values) "
+        "and an **ideal worst** (all criteria at their worst). "
+        "The alternative closest to the ideal best and farthest "
+        "from the ideal worst wins.\n\n"
+        "The algorithm follows five steps:\n\n"
+        "1. **Normalize** the decision matrix so criteria with "
+        "different units become comparable\n"
+        "2. **Apply weights** to reflect how important each criterion is\n"
+        "3. **Identify ideal solutions** — the best and worst "
+        "weighted score for each criterion\n"
+        "4. **Measure distances** from each alternative to both ideal solutions\n"
+        "5. **Rank** alternatives by their relative closeness to the ideal best"
+    )
+
+with st.expander("The Math"):
+    st.markdown("**Step 1 — Vector normalization**")
+    st.markdown(
+        "Each score $x_{ij}$ is normalized by dividing by the "
+        "Euclidean norm of its criterion column:"
+    )
+    st.latex(r"r_{ij} = \frac{x_{ij}}{\sqrt{\sum_{k=1}^{m} x_{kj}^{2}}}")
+    st.markdown(
+        "where $m$ is the number of alternatives and $j$ indexes the criterion."
+    )
+
+    st.markdown("**Step 2 — Weighted normalized scores**")
+    st.markdown("Multiply each normalized score by the criterion weight $w_j$:")
+    st.latex(r"v_{ij} = w_j \cdot r_{ij}")
+
+    st.markdown("**Step 3 — Ideal best and ideal worst**")
+    st.markdown(
+        "For **benefit** criteria (higher is better), the ideal best $v_j^+$ "
+        "is the maximum and the ideal worst $v_j^-$ is the minimum. "
+        "For **cost** criteria (lower is better), it is reversed:"
+    )
+    st.latex(
+        r"v_j^{+} = \begin{cases}"
+        r"\max_i\, v_{ij} & \text{if } j \text{ is benefit} \\"
+        r"\min_i\, v_{ij} & \text{if } j \text{ is cost}"
+        r"\end{cases}"
+    )
+    st.latex(
+        r"v_j^{-} = \begin{cases}"
+        r"\min_i\, v_{ij} & \text{if } j \text{ is benefit} \\"
+        r"\max_i\, v_{ij} & \text{if } j \text{ is cost}"
+        r"\end{cases}"
+    )
+
+    st.markdown("**Step 4 — Euclidean distance to ideal solutions**")
+    st.latex(r"S_i^{+} = \sqrt{\sum_{j=1}^{n} (v_{ij} - v_j^{+})^{2}}")
+    st.latex(r"S_i^{-} = \sqrt{\sum_{j=1}^{n} (v_{ij} - v_j^{-})^{2}}")
+
+    st.markdown("**Step 5 — Performance score (relative closeness)**")
+    st.latex(r"C_i = \frac{S_i^{-}}{S_i^{+} + S_i^{-}}, \quad C_i \in [0, 1]")
+    st.markdown(
+        "$C_i = 1$ means the alternative sits exactly at the ideal best; "
+        "$C_i = 0$ means it sits at the ideal worst. "
+        "Alternatives are ranked in descending order of $C_i$."
+    )
+
 with st.expander("References"):
     st.markdown(
         "Hwang, C.L.; Lai, Y.J.; Liu, T.Y. (1993). "
