@@ -134,6 +134,61 @@ def test_max() -> None:
     ) == TriangularFuzzyNumber(Decimal("1"), Decimal("1"), Decimal("10"))
 
 
+def test_less_than_or_equal() -> None:
+    tfn1 = TriangularFuzzyNumber(Decimal("1"), Decimal("2"), Decimal("3"))
+    tfn2 = TriangularFuzzyNumber(Decimal("2"), Decimal("3"), Decimal("4"))
+    tfn_same = TriangularFuzzyNumber(Decimal("1"), Decimal("2"), Decimal("3"))
+
+    # a < other.a → True
+    assert tfn1 <= tfn2
+    # Equal → True
+    assert tfn1 <= tfn_same
+    # a > other.a and not equal → False
+    assert not tfn2 <= tfn1
+
+
+def test_greater_than_or_equal() -> None:
+    tfn1 = TriangularFuzzyNumber(Decimal("1"), Decimal("2"), Decimal("5"))
+    tfn2 = TriangularFuzzyNumber(Decimal("2"), Decimal("3"), Decimal("4"))
+    tfn_same = TriangularFuzzyNumber(Decimal("1"), Decimal("2"), Decimal("5"))
+
+    # c > other.c → True
+    assert tfn1 >= tfn2
+    # Equal → True
+    assert tfn1 >= tfn_same
+    # c < other.c and not equal → False
+    assert not tfn2 >= tfn1
+
+
+def test_membership_outside_support() -> None:
+    tfn = TriangularFuzzyNumber(Decimal("2"), Decimal("5"), Decimal("8"))
+
+    # Below a
+    assert tfn.membership(Decimal("1")) == Decimal("0")
+    # Above c
+    assert tfn.membership(Decimal("9")) == Decimal("0")
+
+
+def test_membership_ascending_side() -> None:
+    tfn = TriangularFuzzyNumber(Decimal("2"), Decimal("5"), Decimal("8"))
+
+    # At a → 0
+    assert tfn.membership(Decimal("2")) == Decimal("0")
+    # At b → 1
+    assert tfn.membership(Decimal("5")) == Decimal("1")
+    # Midpoint of ascending side: (3.5 - 2) / (5 - 2) = 0.5
+    assert tfn.membership(Decimal("3.5")) == Decimal("0.5")
+
+
+def test_membership_descending_side() -> None:
+    tfn = TriangularFuzzyNumber(Decimal("2"), Decimal("5"), Decimal("8"))
+
+    # At c → 0
+    assert tfn.membership(Decimal("8")) == Decimal("0")
+    # Midpoint of descending side: (8 - 6.5) / (8 - 5) = 0.5
+    assert tfn.membership(Decimal("6.5")) == Decimal("0.5")
+
+
 def test_euclidean_distance() -> None:
     assert TriangularFuzzyNumber.euclidean_distance(
         TriangularFuzzyNumber(
