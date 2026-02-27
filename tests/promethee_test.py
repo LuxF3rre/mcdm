@@ -2,7 +2,11 @@ from decimal import Decimal
 
 import pandas as pd
 
-from mcdm.promethee import calculate_promethee
+from mcdm.promethee import (
+    calculate_deviations,
+    calculate_preference_degrees,
+    calculate_promethee,
+)
 
 
 def test_calculate_promethee_usual() -> None:
@@ -105,3 +109,89 @@ def test_calculate_promethee_clear_winner() -> None:
     # C is worst
     assert result.iloc[2]["Option"] == "C"
     assert result.iloc[2]["Rank"] == 3.0
+
+
+def test_calculate_promethee_linear_preference() -> None:
+    """Linear preference function with q and p thresholds."""
+    data = pd.DataFrame(
+        {
+            "Option": ["A", "A", "B", "B", "C", "C"],
+            "Criterion": ["C1", "C1", "C1", "C1", "C1", "C1"],
+            "Weight": [Decimal("1")] * 6,
+            "Score": [
+                Decimal("100"),
+                Decimal("100"),
+                Decimal("120"),
+                Decimal("120"),
+                Decimal("200"),
+                Decimal("200"),
+            ],
+            "Is Negative": [False] * 6,
+        }
+    )
+    # Fix: each option should have one row per criterion
+    data = pd.DataFrame(
+        {
+            "Option": ["A", "B", "C"],
+            "Criterion": ["C1", "C1", "C1"],
+            "Weight": [Decimal("1"), Decimal("1"), Decimal("1")],
+            "Score": [Decimal("100"), Decimal("120"), Decimal("200")],
+            "Is Negative": [False, False, False],
+        }
+    )
+
+    pref_funcs = pd.DataFrame(
+        {
+            "Criterion": ["C1"],
+            "PreferenceFunction": ["linear"],
+            "IndifferenceThreshold": [Decimal("10")],
+            "PreferenceThreshold": [Decimal("50")],
+        }
+    )
+
+    # d(A,B) = 100-120 = -20 → P=0
+    # d(A,C) = 100-200 = -100 → P=0
+    # d(B,A) = 120-100 = 20 → 20>q=10, 20<p=50 → P=(20-10)/(50-10)=0.25
+    # d(B,C) = 120-200 = -80 → P=0
+    # d(C,A) = 200-100 = 100 → 100>=p=50 → P=1
+    # d(C,B) = 200-120 = 80 → 80>=p=50 → P=1
+
+    result = calculate_promethee(data, preference_functions=pref_funcs)
+    result = result.sort_values("Rank").reset_index(drop=True)
+
+    # C dominates (highest score, all positive deviations >= p)
+    assert result.iloc[0]["Option"] == "C"
+    # A is worst (all negative deviations)
+    assert result.iloc[2]["Option"] == "A"
+
+
+def test_calculate_preference_degrees_with_usual_in_params() -> None:
+    """Preference functions DataFrame with 'usual' type explicitly."""
+    data = pd.DataFrame(
+        {
+            "Option": ["A", "B"],
+            "Criterion": ["C1", "C1"],
+            "Weight": [Decimal("1"), Decimal("1")],
+            "Score": [Decimal("10"), Decimal("20")],
+            "Is Negative": [False, False],
+        }
+    )
+
+    pref_funcs = pd.DataFrame(
+        {
+            "Criterion": ["C1"],
+            "PreferenceFunction": ["usual"],
+            "IndifferenceThreshold": [Decimal("0")],
+            "PreferenceThreshold": [Decimal("0")],
+        }
+    )
+
+    deviations = calculate_deviations(data)
+    prefs = calculate_preference_degrees(deviations, pref_funcs)
+
+    assert "PreferenceDegree" in prefs.columns
+    # d(A,B) = 10-20 = -10 → P=0, d(B,A) = 20-10 = 10 → P=1
+    ab_row = prefs[(prefs["Option_A"] == "A") & (prefs["Option_B"] == "B")]
+    ba_row = prefs[(prefs["Option_A"] == "B") & (prefs["Option_B"] == "A")]
+    assert ab_row["PreferenceDegree"].iloc[0] == Decimal("0")
+    assert ba_row["PreferenceDegree"].iloc[0] == Decimal("1")

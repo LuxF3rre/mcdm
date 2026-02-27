@@ -111,3 +111,20 @@ def test_calculate_ahp() -> None:
 
     # Verify ranking has all options
     assert set(ranking["Option"]) == {"A", "B", "C"}
+
+
+def test_consistency_ratio_two_criteria() -> None:
+    """CR should be 0 for n<=2 (always consistent by definition)."""
+    criteria = ["C1", "C2"]
+    comparison = pd.DataFrame(
+        {
+            criteria[0]: [_ONE, _ONE / _THREE],
+            criteria[1]: [_THREE, _ONE],
+        },
+        index=criteria,
+    )
+
+    weights = calculate_priority_vector(comparison)
+    cr = calculate_consistency_ratio(comparison, weights)
+
+    assert cr == Decimal("0")
